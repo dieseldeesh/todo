@@ -1,0 +1,57 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.home.home {
+    background: $dark-gray4;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.content.content {
+    height: 90vh;
+    min-width: $pt-grid-size * 100;
+    display: flex;
+    align-self: flex-end;
+
+    .tasksView,
+    .formView {
+        background-color: $dark-gray5;
+    }
+}
+
+.tasksView {
+    min-width: 41 * $pt-grid-size;
+    padding-bottom: 0;
+    overflow: auto;
+    transition: flex 800ms;
+    transition-delay: 300ms;
+}
+
+.tasksView.shrink {
+    flex: 0;
+}
+
+.tasksView.stretch {
+    flex: 1;
+}
+
+.formView {
+    flex: 0 1 68 * $pt-grid-size;
+    min-width: 50 * $pt-grid-size;
+    margin-left: 1.5 * $pt-grid-size;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.formHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $pt-grid-size * 2;
+
+    h2 {
+        margin: 0;
+    }
+}

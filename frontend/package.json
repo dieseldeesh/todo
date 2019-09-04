@@ -1,0 +1,71 @@
+{
+    "name": "todo-list-app",
+    "version": "0.1.0",
+    "private": true,
+    "license": "UNLICENSED",
+    "dependencies": {
+        "@blueprintjs/core": "^3.16.2",
+        "@blueprintjs/datetime": "^3.9.2",
+        "@blueprintjs/icons": "^3.9.0",
+        "@blueprintjs/select": "^3.10.0",
+        "browser-cookies": "^1.2.0",
+        "classnames": "^2.2.6",
+        "conjure-client": "^1.6.0",
+        "http-proxy-middleware": "^0.19.1",
+        "lodash-es": "^4.17.14",
+        "moment": "^2.24.0",
+        "node-sass": "^4.12.0",
+        "pluralize": "^8.0.0",
+        "query-string": "^6.8.1",
+        "react": "^16.8.6",
+        "react-dom": "^16.8.6",
+        "react-redux": "^7.1.0",
+        "react-router": "^5.0.1",
+        "react-router-dom": "^5.0.1",
+        "react-scripts": "3.0.1",
+        "react-transition-group": "^4.2.2",
+        "redoodle": "^2.3.2",
+        "redux": "^4.0.4",
+        "redux-devtools-extension": "^2.13.8",
+        "typescript": "3.5.2"
+    },
+    "scripts": {
+        "prepare": "npm run gcp-build",
+        "pretest": "npm run gcp-build",
+        "start-dev": "PORT=3001 REACT_APP_BACKEND_API='http://localhost:8080' react-scripts start",
+        "start": "PORT=3001 react-scripts start",
+        "gcp-build": "react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject"
+    },
+    "eslintConfig": {
+        "extends": "react-app"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "devDependencies": {
+        "@types/classnames": "^2.2.8",
+        "@types/jest": "24.0.15",
+        "@types/lodash-es": "^4.17.3",
+        "@types/node": "12.0.10",
+        "@types/pluralize": "^0.0.29",
+        "@types/query-string": "^6.3.0",
+        "@types/react": "16.8.22",
+        "@types/react-dom": "16.8.4",
+        "@types/react-qr-reader": "^2.1.2",
+        "@types/react-redux": "^7.1.1",
+        "@types/react-router-dom": "^4.3.4",
+        "@types/react-transition-group": "^4.2.2",
+        "@types/redux": "^3.6.0"
+    }
+}

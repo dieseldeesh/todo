@@ -1,0 +1,22 @@
+runtime: nodejs10
+
+handlers:
+    - url: /(.+)
+      static_files: build/\1
+      upload: build/(.*)
+
+    - url: /
+      static_files: build/index.html
+      upload: build/index.html
+
+    - url: /tasks
+      static_files: build/index.html
+      upload: build/index.html
+
+    - url: /edit/*
+      static_files: build/index.html
+      upload: build/index.html
+
+    - url: /add
+      static_files: build/index.html
+      upload: build/index.html

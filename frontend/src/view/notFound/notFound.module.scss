@@ -1,0 +1,33 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.listButton.listButton,
+.listButton.listButton:hover {
+    text-decoration: none;
+}
+
+.notFoundPage {
+    background: $dark-gray4;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.pageContentWrapper {
+    width: 100%;
+    overflow: auto;
+
+    .pageContent {
+        width: 35 * $pt-grid-size;
+        margin: 0 auto;
+    }
+
+    &:before,
+    &:after {
+        height: 2 * $pt-grid-size;
+        display: block;
+        width: 100%;
+        content: "";
+    }
+}
