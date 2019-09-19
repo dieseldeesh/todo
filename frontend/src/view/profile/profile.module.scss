@@ -1,0 +1,103 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.home.home {
+    background: $dark-gray3;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.body.body {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.content.content {
+    display: flex;
+
+    .tasksView,
+    .formView {
+        background-color: $dark-gray5;
+    }
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.tasksView {
+    min-width: 41 * $pt-grid-size;
+    overflow: auto;
+}
+
+.resizer.resizer {
+    min-width: 50 * $pt-grid-size;
+    width: auto;
+}
+
+.photoImg,
+.photoCanvas {
+    border-radius: 5 * $pt-grid-size;
+    height: 10 * $pt-grid-size;
+    width: 10 * $pt-grid-size;
+    margin-right: 2 * $pt-grid-size;
+}
+
+.hidePhotoImg {
+    max-width: 50 * $pt-grid-size;
+    max-height: 50 * $pt-grid-size;
+    display: none;
+}
+
+.profilePicture > :global(.bp3-form-content) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.photoCanvas {
+    position: relative;
+    margin-bottom: $pt-grid-size;
+    > .editPhoto {
+        display: none;
+    }
+}
+
+.photoCanvas:hover > .editPhoto {
+    display: flex;
+    height: 5 * $pt-grid-size;
+    width: 10 * $pt-grid-size;
+    border-radius: 0 0 5 * $pt-grid-size 5 * $pt-grid-size;
+    background: $dark-gray1;
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    z-index: 1000;
+    align-items: center;
+    justify-content: space-around;
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+.fileInput {
+    display: none;
+}
+
+.cropDialogBody {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.formWrapper {
+    display: flex;
+    align-items: center;
+    .textInputs {
+        flex: 1;
+    }
+}

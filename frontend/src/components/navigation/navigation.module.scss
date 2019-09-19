@@ -1,0 +1,7 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.profileButton {
+    height: 3 * $pt-grid-size;
+    width: 3 * $pt-grid-size;
+    cursor: pointer;
+}

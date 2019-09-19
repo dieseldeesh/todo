@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "adhishr-test",
+    "staging": "adhishr-test"
+  }
+}

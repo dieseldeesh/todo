@@ -1,0 +1,79 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.authPage {
+    background: $dark-gray3;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.pageContentWrapper {
+    width: 100%;
+    overflow: auto;
+
+    .pageContent {
+        width: 35 * $pt-grid-size;
+        margin: 0 auto;
+    }
+
+    &:before,
+    &:after {
+        height: 2 * $pt-grid-size;
+        display: block;
+        width: 100%;
+        content: "";
+    }
+}
+
+.fadeCollapse {
+    opacity: 0;
+}
+
+.authenticationToggle {
+    font-size: $pt-font-size;
+    display: flex;
+    align-items: center;
+    margin-top: 2 * $pt-grid-size;
+}
+
+.formSection {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.taskDescription.taskDescription {
+    width: 100%;
+    height: 20 * $pt-grid-size;
+}
+
+.taskStatus {
+    display: flex;
+    align-items: center;
+    color: $light-gray1;
+}
+
+.dateInputPopoverTarget.dateInputPopoverTarget {
+    display: flex;
+}
+
+.dateInput {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: flex-start;
+}

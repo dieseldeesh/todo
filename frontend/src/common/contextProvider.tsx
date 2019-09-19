@@ -2,11 +2,12 @@ import * as React from "react";
 
 import * as PropTypes from "prop-types";
 import { RouterChildContext } from "react-router";
-import { StateService, TaskService } from "../service";
+import { StateService, FileService, UserService } from "../service";
 
 export interface IServiceContext {
     stateService: StateService;
-    taskService: TaskService;
+    fileService: FileService;
+    userService: UserService;
 }
 
 export interface IContextType {

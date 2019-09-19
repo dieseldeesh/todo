@@ -1,0 +1,57 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.taskStatusIcon {
+    margin-right: $pt-grid-size;
+}
+
+.taskStatusNotStated.taskStatusNotStated.taskStatusNotStated.taskStatusNotStated {
+    color: $gray5;
+}
+
+.taskStatusInProgress.taskStatusInProgress.taskStatusInProgress.taskStatusInProgress {
+    color: $orange5;
+}
+
+.taskStatusBlocked.taskStatusBlocked.taskStatusBlocked.taskStatusBlocked {
+    color: $red5;
+}
+
+.taskStatusCompleted.taskStatusCompleted.taskStatusCompleted.taskStatusCompleted {
+    color: $green5;
+}
+
+.taskDifficultyEasy.taskDifficultyEasy.taskDifficultyEasy.taskDifficultyEasy {
+    color: $green5;
+}
+
+.taskDifficultyMedium.taskDifficultyMedium.taskDifficultyMedium.taskDifficultyMedium {
+    color: $gold5;
+}
+
+.taskDifficultyHard.taskDifficultyHard.taskDifficultyHard.taskDifficultyHard {
+    color: $red5;
+}
+
+.taskImportanceP0.taskImportanceP0.taskImportanceP0.taskImportanceP0 {
+    color: $red5;
+}
+
+.taskImportanceP1.taskImportanceP1.taskImportanceP1.taskImportanceP1 {
+    color: $orange5;
+}
+
+.taskImportanceP2.taskImportanceP2.taskImportanceP2.taskImportanceP2 {
+    color: $gold5;
+}
+
+.taskImportanceP3.taskImportanceP3.taskImportanceP3.taskImportanceP3 {
+    color: $green5;
+}
+
+.taskImportanceP4.taskImportanceP4.taskImportanceP4.taskImportanceP4 {
+    color: $blue5;
+}
+
+.unset.unset.unset.unset {
+    color: $gray5;
+}

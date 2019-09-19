@@ -1,0 +1,62 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.formSection {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.projectDescription.projectDescription {
+    width: 100%;
+    height: 10 * $pt-grid-size;
+}
+
+.projectMember {
+    display: flex;
+    align-items: center;
+    border-radius: $pt-grid-size / 5;
+    padding: $pt-grid-size / 2;
+    text-decoration: none;
+    line-height: 2 * $pt-grid-size;
+    user-select: none;
+    justify-content: space-between;
+}
+
+.projectMemberMetadata {
+    display: flex;
+    align-items: center;
+}
+
+.memberInput {
+    padding: $pt-grid-size / 2 0;
+    height: 100%;
+}
+
+.yourself {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: $pt-grid-size / 2 $pt-grid-size;
+    vertical-align: middle;
+    text-align: left;
+    font-size: $pt-font-size;
+    width: 3 * $pt-grid-size;
+    height: 3 * $pt-grid-size;
+
+    .youIcon {
+        color: $gray4;
+    }
+}

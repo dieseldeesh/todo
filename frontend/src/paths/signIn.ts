@@ -1,23 +1,23 @@
 import { RouteComponentProps } from "react-router";
 import { IPath } from "../common/path";
 
-export class AddPath extends IPath {
-    public static readonly TEMPLATE = `/add`;
+export class SignInPath extends IPath {
+    public static readonly TEMPLATE = `/signin`;
 
     public static fromRoute(_routeProps: RouteComponentProps) {
-        return new AddPath();
+        return new SignInPath();
     }
 
     public getTemplate() {
-        return AddPath.TEMPLATE;
+        return SignInPath.TEMPLATE;
     }
 
     public getPathName() {
-        return AddPath.TEMPLATE;
+        return SignInPath.TEMPLATE;
     }
 
     public getTitle() {
-        return `Add a task`;
+        return `Sign in`;
     }
 
     public getQueryParams() {

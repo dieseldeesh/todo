@@ -10,26 +10,26 @@ import { applyMiddleware, createStore } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { createInitialState, appReducer } from "./state";
 import { ContextProvider } from "./common/contextProvider";
-import { StateService, TaskService } from "./service";
+import { StateService, FileService, UserService } from "./service";
 import { createApi } from "./common/createApi";
 import { toasterMiddleware, titleMiddleware } from "./middleware";
 import { createBrowserHistory } from "history";
 
-const BACKEND_API = process.env.REACT_APP_BACKEND_API || "https://backend-dot-adhish-test-project.appspot.com";
 const history = createBrowserHistory();
 const middlewareEnhancer = composeWithDevTools(
     applyMiddleware(titleMiddleware(), loggingMiddleware(), toasterMiddleware()),
 );
 const createStoreWithMiddleware = middlewareEnhancer(createStore);
-const store = createStoreWithMiddleware(appReducer, createInitialState(history));
+const store = createStoreWithMiddleware(appReducer, createInitialState());
 
-const api = createApi({ backendApi: BACKEND_API });
+const api = createApi();
 
 const stateService = new StateService(store.dispatch);
-const taskService = new TaskService(store, api.taskService);
+const fileService = new FileService(store, api.fileService, api.photoService);
+const userService = new UserService(store, api.userService, api.searchService, api.photoService);
 ReactDOM.render(
     <Provider store={store}>
-        <ContextProvider stateService={stateService} taskService={taskService}>
+        <ContextProvider stateService={stateService} userService={userService} fileService={fileService}>
             <Router history={history}>
                 <App />
             </Router>

@@ -1,15 +1,9 @@
 import { Dispatch } from "redux";
 import { Action } from "redoodle";
-import { SetTitle, ClearHomeState, CreateToast } from "../state";
-import { AppAction } from "../state/types";
-import { SetAppAction, SetShowIncompletedTasks } from "../state/actions";
+import { SetTitle, CreateToast, AppAction, SetAppAction, SetShowIncompletedTasks } from "../state";
 
 export class StateService {
     constructor(private dispatch: Dispatch<Action>) {}
-
-    public clearHomeState() {
-        this.dispatch(ClearHomeState.create(undefined));
-    }
 
     public toggleShowIncompletedTasks(setShowIncompletedTasks: boolean) {
         this.dispatch(SetShowIncompletedTasks.create(setShowIncompletedTasks));

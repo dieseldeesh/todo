@@ -1,23 +1,23 @@
 import { RouteComponentProps } from "react-router";
 import { IPath } from "../common/path";
 
-export class ListPath extends IPath {
-    public static readonly TEMPLATE = `/tasks`;
+export class ProfilePath extends IPath {
+    public static readonly TEMPLATE = `/profile`;
 
     public static fromRoute(_routeProps: RouteComponentProps) {
-        return new ListPath();
+        return new ProfilePath();
     }
 
     public getTemplate() {
-        return ListPath.TEMPLATE;
+        return ProfilePath.TEMPLATE;
     }
 
     public getPathName() {
-        return ListPath.TEMPLATE;
+        return ProfilePath.TEMPLATE;
     }
 
     public getTitle() {
-        return `List all tasks`;
+        return `View user profile`;
     }
 
     public getQueryParams() {

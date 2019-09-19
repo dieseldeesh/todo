@@ -5,6 +5,10 @@ export class CountableValue<T> {
         return value.length === 0 ? CountableValue.EMPTY_VALUE : new CountableValue<T>(value);
     }
 
+    public static isEmpty<T>(value: T[]): boolean {
+        return value.length === 0;
+    }
+
     private static EMPTY_VALUE = new CountableValue<any>([]);
 
     private value: T[];
@@ -18,7 +22,7 @@ export class CountableValue<T> {
     }
 
     public isEmpty(): boolean {
-        return this.value.length === 0;
+        return CountableValue.isEmpty(this.value);
     }
 
     public maybeGetElementAtIndex(index: number): NullableValue<T> {

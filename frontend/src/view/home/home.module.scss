@@ -1,16 +1,22 @@
 @import "~@blueprintjs/core/lib/scss/variables";
 
 .home.home {
-    background: $dark-gray4;
+    background: $dark-gray3;
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
+}
+
+.body.body {
+    display: flex;
+    flex: 1;
     align-items: center;
     justify-content: center;
 }
 
 .content.content {
     height: 90vh;
-    min-width: $pt-grid-size * 100;
+    min-width: $pt-grid-size * 120;
     display: flex;
     align-self: flex-end;
 
@@ -20,12 +26,26 @@
     }
 }
 
+.taskList {
+    height: 100%;
+    overflow: auto;
+    padding-bottom: $pt-grid-size;
+}
+
+.taskListActions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .tasksView {
-    min-width: 41 * $pt-grid-size;
+    min-width: 60 * $pt-grid-size;
     padding-bottom: 0;
     overflow: auto;
     transition: flex 800ms;
     transition-delay: 300ms;
+    display: flex;
+    flex-direction: column;
 }
 
 .tasksView.shrink {
@@ -34,6 +54,12 @@
 
 .tasksView.stretch {
     flex: 1;
+}
+
+.listTasks {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 }
 
 .formView {
@@ -54,4 +80,8 @@
     h2 {
         margin: 0;
     }
+}
+
+.actionButtonTarget {
+    margin-bottom: $pt-grid-size;
 }

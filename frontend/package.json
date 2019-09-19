@@ -10,8 +10,9 @@
         "@blueprintjs/select": "^3.10.0",
         "browser-cookies": "^1.2.0",
         "classnames": "^2.2.6",
-        "conjure-client": "^1.6.0",
+        "firebase": "^6.6.0",
         "http-proxy-middleware": "^0.19.1",
+        "immutable": "^4.0.0-rc.12",
         "lodash-es": "^4.17.14",
         "moment": "^2.24.0",
         "node-sass": "^4.12.0",
@@ -19,6 +20,7 @@
         "query-string": "^6.8.1",
         "react": "^16.8.6",
         "react-dom": "^16.8.6",
+        "react-image-crop": "^8.3.0",
         "react-redux": "^7.1.0",
         "react-router": "^5.0.1",
         "react-router-dom": "^5.0.1",
@@ -27,13 +29,13 @@
         "redoodle": "^2.3.2",
         "redux": "^4.0.4",
         "redux-devtools-extension": "^2.13.8",
-        "typescript": "3.5.2"
+        "typescript": "3.5.2",
+        "uuid": "^3.3.3"
     },
     "scripts": {
         "prepare": "npm run gcp-build",
         "pretest": "npm run gcp-build",
-        "start-dev": "PORT=3001 REACT_APP_BACKEND_API='http://localhost:8080' react-scripts start",
-        "start": "PORT=3001 react-scripts start",
+        "start": "react-scripts start",
         "gcp-build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
@@ -55,6 +57,7 @@
     },
     "devDependencies": {
         "@types/classnames": "^2.2.8",
+        "@types/immutable": "^3.8.7",
         "@types/jest": "24.0.15",
         "@types/lodash-es": "^4.17.3",
         "@types/node": "12.0.10",
@@ -62,10 +65,11 @@
         "@types/query-string": "^6.3.0",
         "@types/react": "16.8.22",
         "@types/react-dom": "16.8.4",
-        "@types/react-qr-reader": "^2.1.2",
+        "@types/react-image-crop": "^8.1.2",
         "@types/react-redux": "^7.1.1",
         "@types/react-router-dom": "^4.3.4",
         "@types/react-transition-group": "^4.2.2",
-        "@types/redux": "^3.6.0"
+        "@types/redux": "^3.6.0",
+        "@types/uuid": "^3.4.5"
     }
 }

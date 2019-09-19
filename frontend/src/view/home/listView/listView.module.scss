@@ -5,25 +5,10 @@
     text-decoration: none;
 }
 
-.addButtonTarget {
-    margin-bottom: $pt-grid-size;
-}
-
-.listTasks {
-    height: 100%;
-    overflow: hidden;
-}
-
-.taskList {
-    height: 100%;
-    overflow: auto;
-    padding-bottom: $pt-grid-size;
-}
-
-.taskListActions {
+.listFiles {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    flex: 1;
 }
 
 .task.task {
@@ -38,11 +23,6 @@
 
 .taskTitle {
     margin-right: $pt-grid-size;
-}
-
-.taskInfo {
-    display: flex;
-    align-items: center;
     flex: 1;
 }
 
@@ -59,4 +39,24 @@
 
 .selectedTask.selectedTask {
     background: $blue3;
+}
+
+.fileIcon {
+    margin-right: $pt-grid-size;
+    width: 3 * $pt-grid-size;
+    height: 3 * $pt-grid-size;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.skeletonIcon {
+    margin-right: $pt-grid-size;
+}
+
+.profilePicture {
+    border-radius: 1.5 * $pt-grid-size;
+    height: 3 * $pt-grid-size;
+    width: 3 * $pt-grid-size;
+    margin-right: $pt-grid-size;
 }

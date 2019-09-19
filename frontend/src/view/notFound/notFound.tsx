@@ -3,7 +3,7 @@ import { NonIdealState, Button, Intent, Card, Elevation } from "@blueprintjs/cor
 import { PathLink } from "../../common/navigationWithPath";
 import { IconNames } from "@blueprintjs/icons";
 import styles from "./notFound.module.scss";
-import { ListPath } from "../../paths/list";
+import { TaskPath } from "../../paths";
 
 export class NotFound extends React.PureComponent {
     private static STRINGS = {
@@ -27,7 +27,7 @@ export class NotFound extends React.PureComponent {
     private renderBackToHome() {
         const { STRINGS } = NotFound;
         return (
-            <PathLink className={styles.listButton} to={new ListPath()}>
+            <PathLink className={styles.listButton} to={new TaskPath({})}>
                 <Button intent={Intent.PRIMARY} text={STRINGS.ACTION} />
             </PathLink>
         );

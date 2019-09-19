@@ -1,7 +1,7 @@
 import { Pathname, Search, LocationDescriptorObject } from "history";
 import { isEmpty } from "lodash-es";
 import * as queryString from "query-string";
-import { templatizeQueryParams } from "../common/templatizeQueryParams";
+import { templatizeQueryParams } from "./templatizeQueryParams";
 
 export interface IPathInfo {
     path: string;
