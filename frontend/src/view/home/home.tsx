@@ -158,6 +158,7 @@ class UnconnectedHome extends React.PureComponent<IProps, IState> {
                     <div className={styles.content}>
                         <Card elevation={Elevation.THREE} className={listStyles}>
                             <div className={styles.listTasks}>
+                                {this.maybeRenderCurrentProjectTitle()}
                                 <div className={styles.taskListActions}>
                                     {this.maybeRenderCurrentProjectMetadata()}
                                     {this.renderActions()}
@@ -182,11 +183,19 @@ class UnconnectedHome extends React.PureComponent<IProps, IState> {
         );
     }
 
+    private maybeRenderCurrentProjectTitle() {
+        const { currentProject } = this.props;
+        if (AsyncLoadedValue.isLoadingSucceeded(currentProject)) {
+            const { title } = currentProject.value;
+            return <H3 className={styles.listTitle}>{title}</H3>;
+        }
+    }
+
     private maybeRenderCurrentProjectMetadata() {
         const { currentProject } = this.props;
         const { STRINGS } = UnconnectedHome;
         if (AsyncLoadedValue.isLoadingSucceeded(currentProject)) {
-            const { title, parentProjectId } = currentProject.value;
+            const { parentProjectId } = currentProject.value;
             const parentProjectName = NullableValue.of(parentProjectId)
                 .map(validProjectId => {
                     const parentProject = this.props.fetchedProjects.get(validProjectId);
@@ -200,15 +209,12 @@ class UnconnectedHome extends React.PureComponent<IProps, IState> {
 
             const backText = `${STRINGS.BACK_TO} ${parentProjectName}`;
             return (
-                <>
-                    <Button
-                        minimal={true}
-                        intent={Intent.PRIMARY}
-                        text={backText}
-                        onClick={this.onBackClick(NullableValue.of(parentProjectId).getOrUndefined())}
-                    />
-                    <H3>{title}</H3>
-                </>
+                <Button
+                    minimal={true}
+                    intent={Intent.PRIMARY}
+                    text={backText}
+                    onClick={this.onBackClick(NullableValue.of(parentProjectId).getOrUndefined())}
+                />
             );
         }
     }
@@ -219,7 +225,6 @@ class UnconnectedHome extends React.PureComponent<IProps, IState> {
         return (
             <Popover>
                 <Button
-                    className={styles.actionButtonTarget}
                     intent={Intent.PRIMARY}
                     minimal={true}
                     text={STRINGS.ACTIONS}

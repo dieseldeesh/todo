@@ -5,9 +5,8 @@ import { IFileState, TaskStatus, IApplicationState } from "../../../state";
 import { AsyncLoadedValue } from "../../../common/redoodle";
 import { IconNames } from "@blueprintjs/icons";
 import { CountableValue } from "../../../common/countableValue";
-import { TaskStatusIcon, TaskDifficultyIcon, TaskImportanceIcon } from "../taskIcon/taskIcon";
+import { TaskStatusIcon, TaskDifficultyIcon, TaskImportanceIcon, TaskIconGroup } from "../taskIcon/taskIcon";
 import moment from "moment";
-import { ABBREVIATED_DATE_TIME_FORMAT } from "../../../common/dateTimeFormat";
 import classNames from "classnames";
 import { connect } from "react-redux";
 import { EntityWithId } from "../../../common/firebase";
@@ -17,7 +16,7 @@ import { Assignee } from "../assignee/assignee";
 import { AppView } from "../../../state/types";
 import { IProject, FileType } from "../../../api/file";
 import { assertNever } from "../../../common/assertNever";
-import { times } from "lodash-es";
+import { times, sortBy } from "lodash-es";
 
 interface IProps {
     showNew?: "task" | "project";
@@ -79,7 +78,7 @@ class UnconnectedListView extends React.PureComponent<IProps & IFileState> {
             (appView === AppView.TASKS || AsyncLoadedValue.isLoadingSucceeded(projectsWithId))
         ) {
             const projects = AsyncLoadedValue.isLoadingSucceeded(projectsWithId) ? projectsWithId.value : [];
-            const allFiles = [...tasksWithId.value, ...projects];
+            const allFiles = sortBy([...tasksWithId.value, ...projects], file => file.modifiedAt);
             return CountableValue.of(allFiles)
                 .map(this.renderFileWithId)
                 .getValueOrDefault(showNew != null && showIncompletedTasks ? undefined : this.renderNoFiles());
@@ -127,9 +126,11 @@ class UnconnectedListView extends React.PureComponent<IProps & IFileState> {
                 <Text ellipsize={true} className={styles.taskTitle}>
                     {title}
                 </Text>
-                <TaskStatusIcon status={status} />
-                {difficulty && <TaskDifficultyIcon difficulty={difficulty} />}
-                {importance && <TaskImportanceIcon importance={importance} />}
+                <TaskIconGroup>
+                    <TaskStatusIcon status={status} />
+                    {difficulty && <TaskDifficultyIcon difficulty={difficulty} />}
+                    {importance && <TaskImportanceIcon importance={importance} />}
+                </TaskIconGroup>
                 {showAssignee && <Assignee assignee={assignee} render={this.renderAssignee} />}
                 {this.maybeRenderDueDate(dueDate)}
             </div>
@@ -150,7 +151,11 @@ class UnconnectedListView extends React.PureComponent<IProps & IFileState> {
     private renderAssignee = (assignee: ISearchedUser) => {
         const { displayName, email, photoURL } = assignee;
         const displayContent = displayName == null ? email : displayName;
-        return <Tooltip content={displayContent}>{this.renderProfilePicture(displayContent, photoURL)}</Tooltip>;
+        return (
+            <div className={styles.assignee}>
+                <Tooltip content={displayContent}>{this.renderProfilePicture(displayContent, photoURL)}</Tooltip>
+            </div>
+        );
     };
 
     private renderProfilePicture(displayContent: string, photoURL: string | undefined) {
@@ -163,7 +168,7 @@ class UnconnectedListView extends React.PureComponent<IProps & IFileState> {
 
     private maybeRenderDueDate(dueDate: Date | null) {
         return NullableValue.of(dueDate)
-            .map(validDueDate => <Tag>{moment(validDueDate).format(ABBREVIATED_DATE_TIME_FORMAT)}</Tag>)
+            .map(validDueDate => <Tag>{moment(validDueDate).fromNow()}</Tag>)
             .getOrUndefined();
     }
 

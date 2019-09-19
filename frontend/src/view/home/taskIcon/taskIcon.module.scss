@@ -52,6 +52,70 @@
     color: $blue5;
 }
 
-.unset.unset.unset.unset {
-    color: $gray5;
+.taskStatusNotStatedTag.taskStatusNotStatedTag.taskStatusNotStatedTag.taskStatusNotStatedTag {
+    background: $gray5;
+}
+
+.taskStatusInProgressTag.taskStatusInProgressTag.taskStatusInProgressTag.taskStatusInProgressTag {
+    background: $orange5;
+}
+
+.taskStatusBlockedTag.taskStatusBlockedTag.taskStatusBlockedTag.taskStatusBlockedTag {
+    background: $red5;
+}
+
+.taskStatusCompletedTag.taskStatusCompletedTag.taskStatusCompletedTag.taskStatusCompletedTag {
+    background: $green5;
+}
+
+.taskDifficultyEasyTag.taskDifficultyEasyTag.taskDifficultyEasyTag.taskDifficultyEasyTag {
+    background: $green5;
+}
+
+.taskDifficultyMediumTag.taskDifficultyMediumTag.taskDifficultyMediumTag.taskDifficultyMediumTag {
+    background: $gold5;
+}
+
+.taskDifficultyHardTag.taskDifficultyHardTag.taskDifficultyHardTag.taskDifficultyHardTag {
+    background: $red5;
+}
+
+.taskImportanceP0Tag.taskImportanceP0Tag.taskImportanceP0Tag.taskImportanceP0Tag {
+    background: $red5;
+}
+
+.taskImportanceP1Tag.taskImportanceP1Tag.taskImportanceP1Tag.taskImportanceP1Tag {
+    background: $orange5;
+}
+
+.taskImportanceP2Tag.taskImportanceP2Tag.taskImportanceP2Tag.taskImportanceP2Tag {
+    background: $gold5;
+}
+
+.taskImportanceP3Tag.taskImportanceP3Tag.taskImportanceP3Tag.taskImportanceP3Tag {
+    background: $green5;
+}
+
+.taskImportanceP4Tag.taskImportanceP4Tag.taskImportanceP4Tag.taskImportanceP4Tag {
+    background: $blue5;
+}
+
+.taskIconGroup .taskStatusIcon {
+    border: 1px solid $dark-gray5;
+    border-radius: 0;
+    margin-right: 0;
+
+    &:not(:last-child) {
+        border-right: none;
+    }
+}
+
+.taskIconGroup .taskStatusIcon:first-child {
+    border-top-left-radius: $pt-border-radius;
+    border-bottom-left-radius: $pt-border-radius;
+}
+
+.taskIconGroup .taskStatusIcon:last-child {
+    border-top-right-radius: $pt-border-radius;
+    border-bottom-right-radius: $pt-border-radius;
 }

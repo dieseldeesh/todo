@@ -19,6 +19,10 @@
     background: $dark-gray5;
     transition: background 300ms ease;
     color: $light-gray2;
+
+    div:not(:last-child) {
+        margin-right: $pt-grid-size;
+    }
 }
 
 .taskTitle {
@@ -54,9 +58,13 @@
     margin-right: $pt-grid-size;
 }
 
-.profilePicture {
-    border-radius: 1.5 * $pt-grid-size;
+.assignee {
     height: 3 * $pt-grid-size;
     width: 3 * $pt-grid-size;
-    margin-right: $pt-grid-size;
+
+    .profilePicture {
+        border-radius: 1.5 * $pt-grid-size;
+        height: 3 * $pt-grid-size;
+        width: 3 * $pt-grid-size;
+    }
 }

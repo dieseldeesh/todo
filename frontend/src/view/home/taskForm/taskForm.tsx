@@ -430,7 +430,7 @@ class UnconnectedTaskForm extends React.PureComponent<IProps, IState> {
     private renderTaskStatusMenuItemContent(status: TaskStatus, query: string = "") {
         return (
             <div className={styles.taskStatus}>
-                <TaskStatusIcon status={status} />
+                <TaskStatusIcon status={status} minimal={true} />
                 <Text>{highlightText(this.formatStatus(status), query)}</Text>
             </div>
         );
@@ -439,7 +439,7 @@ class UnconnectedTaskForm extends React.PureComponent<IProps, IState> {
     private renderTaskDifficultyMenuItemContent(difficulty: TaskDifficulty | null, query: string = "") {
         return (
             <div className={styles.taskStatus}>
-                {difficulty != null ? <TaskDifficultyIcon difficulty={difficulty} /> : null}
+                {difficulty != null ? <TaskDifficultyIcon difficulty={difficulty} minimal={true} /> : null}
                 <Text>{difficulty == null ? "Not set" : highlightText(difficulty, query)}</Text>
             </div>
         );
@@ -448,7 +448,7 @@ class UnconnectedTaskForm extends React.PureComponent<IProps, IState> {
     private renderTaskImportanceMenuItemContent(importance: TaskImportance | null, query: string = "") {
         return (
             <div className={styles.taskStatus}>
-                {importance != null ? <TaskImportanceIcon importance={importance} /> : null}
+                {importance != null ? <TaskImportanceIcon importance={importance} minimal={true} /> : null}
                 <Text>{importance == null ? "Not set" : highlightText(toUpper(importance), query)}</Text>
             </div>
         );

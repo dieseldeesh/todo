@@ -36,6 +36,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: $pt-grid-size / 2 0;
 }
 
 .tasksView {
@@ -46,6 +47,7 @@
     transition-delay: 300ms;
     display: flex;
     flex-direction: column;
+    border-radius: $pt-border-radius $pt-border-radius 0 0;
 }
 
 .tasksView.shrink {
@@ -54,6 +56,16 @@
 
 .tasksView.stretch {
     flex: 1;
+}
+
+.listTitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    width: 100%;
+    margin: 0;
+    padding-bottom: $pt-grid-size;
+    border-bottom: 1px solid $dark-gray3;
 }
 
 .listTasks {
@@ -69,6 +81,7 @@
     display: flex;
     flex-direction: column;
     overflow: auto;
+    border-radius: $pt-border-radius $pt-border-radius 0 0;
 }
 
 .formHeader {
@@ -80,8 +93,4 @@
     h2 {
         margin: 0;
     }
-}
-
-.actionButtonTarget {
-    margin-bottom: $pt-grid-size;
 }

@@ -6,7 +6,7 @@ export enum AsyncStatus {
     LOADING = "LOADING",
     LOADING_SUCCEEDED = "LOADING_SUCCEEDED",
     LOADING_FAILED = "LOADING_FAILED",
-    RELOADING = "RELOADING"
+    RELOADING = "RELOADING",
 }
 
 export interface IAsyncNotStartedLoading {
@@ -43,7 +43,6 @@ export type IAsyncLoaded<V, E = Error> =
     | IAsyncLoadingFailed<V, E>;
 
 export class AsyncLoadedValue {
-
     private static EMPTY_ASYNC_LOADING: IAsyncLoading = {
         status: AsyncStatus.LOADING,
         progress: undefined,
@@ -54,7 +53,7 @@ export class AsyncLoadedValue {
     };
 
     public static isNotStartedLoading<V, E>(
-        state: IAsyncLoaded<V, E> | undefined
+        state: IAsyncLoaded<V, E> | undefined,
     ): state is IAsyncNotStartedLoading | undefined {
         return undefined === state || state.status === AsyncStatus.NOT_STARTED_LOADING;
     }
@@ -84,8 +83,10 @@ export class AsyncLoadedValue {
     public static hasValue<V, E>(
         state: IAsyncLoaded<V, E> | undefined,
     ): state is IAsyncLoadingSucceeded<V> | IAsyncReloading<V> | IAsyncLoadingFailed<V, E> {
-        return AsyncLoadedValue.isReady(state)
-            || (AsyncLoadedValue.isLoadingFailed(state) && undefined !== state.previousValue);
+        return (
+            AsyncLoadedValue.isReady(state) ||
+            (AsyncLoadedValue.isLoadingFailed(state) && undefined !== state.previousValue)
+        );
     }
 
     public static asyncNotStartedLoading(): IAsyncNotStartedLoading {
@@ -140,7 +141,6 @@ export class AsyncLoadedValue {
 
     public static getValueOrUndefined<V, E>(async: IAsyncLoaded<V, E>) {
         return AsyncLoadedValue.getValueOrDefault(async, undefined);
-
     }
 
     public static getValueOrNull<V, E>(async: IAsyncLoaded<V, E>) {
@@ -154,7 +154,8 @@ export class AsyncLoadedValue {
     public static valueCheck<V, E>(
         async: IAsyncLoaded<V, E>,
         check: (value: V) => boolean,
-        ifNoValue: boolean = false): boolean {
+        ifNoValue: boolean = false,
+    ): boolean {
         return this.isReady(async) ? check(async.value) : ifNoValue;
     }
 }
@@ -174,8 +175,8 @@ export const TypedAsyncAction = {
             InProgress: TypedAction.define(type + "_IN_PROGRESS")<P>(),
             Success: TypedAction.define(type + "_SUCCESS")<S>(),
         });
-    }
-}
+    },
+};
 
 interface Builder<V, E = Error> extends TypedReducer.Builder<IAsyncLoaded<V, E>> {
     withAsyncLoadHandler<P, S, F>(
@@ -188,8 +189,9 @@ interface Builder<V, E = Error> extends TypedReducer.Builder<IAsyncLoaded<V, E>>
 
 class TypedAsyncLoadedReducerImpl<V, E = Error> implements Builder<V, E> {
     private builder = TypedReducer.builder<IAsyncLoaded<V, E>>();
-    private defaultHandler: (state: IAsyncLoaded<V, E>, action: Action) => IAsyncLoaded<V, E> =
-        (state = { status: AsyncStatus.NOT_STARTED_LOADING }) => state;
+    private defaultHandler: (state: IAsyncLoaded<V, E>, action: Action) => IAsyncLoaded<V, E> = (
+        state = { status: AsyncStatus.NOT_STARTED_LOADING },
+    ) => state;
 
     public withAsyncLoadHandler<P, S, F>(
         action: TypedAsyncAction<P, S, F>,
@@ -199,27 +201,27 @@ class TypedAsyncLoadedReducerImpl<V, E = Error> implements Builder<V, E> {
     ) {
         this.builder
             .withHandler(action.Clear.TYPE, () => AsyncLoadedValue.asyncNotStartedLoading())
-            .withHandler(
-                action.InProgress.TYPE,
-                (state, payload): IAsyncLoading | IAsyncReloading<V> => {
-                    const progress = undefined !== getProgress ? getProgress(payload) : undefined;
-                    if (AsyncLoadedValue.isNotStartedLoading(state)
-                        || AsyncLoadedValue.isLoading(state)
-                        || AsyncLoadedValue.isLoadingFailed(state)) {
-                        return AsyncLoadedValue.asyncLoading(progress);
-                    } else if (AsyncLoadedValue.isLoadingSucceeded(state) || AsyncLoadedValue.isReloading(state)) {
-                        return AsyncLoadedValue.asyncReloading(state.value, progress);
-                    }
-                    return assertNever(state);
-                },
-            )
+            .withHandler(action.InProgress.TYPE, (state, payload): IAsyncLoading | IAsyncReloading<V> => {
+                const progress = undefined !== getProgress ? getProgress(payload) : undefined;
+                if (
+                    AsyncLoadedValue.isNotStartedLoading(state) ||
+                    AsyncLoadedValue.isLoading(state) ||
+                    AsyncLoadedValue.isLoadingFailed(state)
+                ) {
+                    return AsyncLoadedValue.asyncLoading(progress);
+                } else if (AsyncLoadedValue.isLoadingSucceeded(state) || AsyncLoadedValue.isReloading(state)) {
+                    return AsyncLoadedValue.asyncReloading(state.value, progress);
+                }
+                return assertNever(state);
+            })
             .withHandler(
                 action.Success.TYPE,
-                (_state, payload): IAsyncLoadingSucceeded<V> => AsyncLoadedValue.asyncLoadingSucceeded(getValue(payload))
+                (_state, payload): IAsyncLoadingSucceeded<V> =>
+                    AsyncLoadedValue.asyncLoadingSucceeded(getValue(payload)),
             )
             .withHandler(
                 action.Failure.TYPE,
-                (_state, payload): IAsyncLoadingFailed<V, E> => AsyncLoadedValue.asyncLoadingFailed(getError(payload))
+                (_state, payload): IAsyncLoadingFailed<V, E> => AsyncLoadedValue.asyncLoadingFailed(getError(payload)),
             );
 
         return this;
@@ -247,9 +249,7 @@ class TypedAsyncLoadedReducerImpl<V, E = Error> implements Builder<V, E> {
     }
 
     public build(): (state: IAsyncLoaded<V, E> | undefined, action: Action) => IAsyncLoaded<V, E> {
-        const reducer = this.builder
-            .withDefaultHandler(this.defaultHandler)
-            .build();
+        const reducer = this.builder.withDefaultHandler(this.defaultHandler).build();
         return reducer as (state: IAsyncLoaded<V, E> | undefined, action: Action) => IAsyncLoaded<V, E>;
     }
 }
@@ -257,5 +257,5 @@ class TypedAsyncLoadedReducerImpl<V, E = Error> implements Builder<V, E> {
 export const TypedAsyncLoadedReducer = {
     builder: <V, E = Error>() => {
         return new TypedAsyncLoadedReducerImpl<V, E>();
-    }
-}
+    },
+};
