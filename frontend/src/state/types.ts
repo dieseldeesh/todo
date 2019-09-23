@@ -15,6 +15,7 @@ export interface IFileState {
     showIncompletedTasks: boolean;
     currentTask: IAsyncLoaded<EntityWithId<ITask>, string>;
     currentProject: IAsyncLoaded<EntityWithId<IProject>, string>;
+    taskProject: IAsyncLoaded<EntityWithId<IProject>, string>;
     fetchedProjects: Map<string, IAsyncLoaded<EntityWithId<IProject>, string>>;
     fetchedTasks: Map<string, IAsyncLoaded<EntityWithId<ITask>, string>>;
 }

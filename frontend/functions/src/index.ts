@@ -38,6 +38,14 @@ enum FileType {
     TASK = "task",
 }
 
+// export const onFileCreate = functions.firestore
+//     .document("file/{fileId}")
+//     .onUpdate((snapshot: FirebaseFirestore.DocumentSnapshot) => {
+//         admin.messaging().sendToTopic()
+//     }
+//         Promise.all([saveDocumentInAlgolia(snapshot), createUserProject(snapshot)]),
+//     );
+
 export const searchUsers = functions.https.onCall(
     (data, context): Promise<Array<IUserProfile>> => {
         const { auth } = context;
@@ -153,9 +161,9 @@ export const usersOnDelete = functions.firestore
         ]),
     );
 
-exports.generateThumbnail = functions.storage.object().onFinalize(async object => {
+export const generateThumbnail = functions.storage.object().onFinalize(async object => {
     const { name: filePath, contentType } = object;
-    if (!isNotNullish(filePath) || !isNotNullish(contentType)) {
+    if (isNullish(filePath) || isNullish(contentType)) {
         throw new functions.https.HttpsError("failed-precondition", "User not signed in");
     }
     const parts = filePath.split("/");
@@ -266,6 +274,141 @@ exports.generateThumbnail = functions.storage.object().onFinalize(async object =
     console.log("deleted original file and crops document");
 });
 
+export const saveFile = functions.https.onCall((data, context) => {
+    const { file, fileId } = data;
+    if (isNullish(context.auth)) {
+        throw new functions.https.HttpsError("failed-precondition", "User not signed in");
+    }
+    const { uid } = context.auth;
+    const { title, description, members, type } = file;
+    const filesCollection = admin.firestore().collection("files");
+    const usersCollection = admin.firestore().collection("users");
+    if (
+        !(
+            isNotNullish(title) &&
+            typeof title === "string" &&
+            isNotNullish(description) &&
+            typeof description === "string" &&
+            isNotNullish(members) &&
+            members instanceof Array &&
+            members.includes(uid) &&
+            (type === "project" || type === "task")
+        )
+    ) {
+        throw new functions.https.HttpsError("failed-precondition", "Invalid file 1");
+    } else if (type === "task") {
+        const { assignee, difficulty, importance, parentProjectId, status } = file;
+        if (isNotNullish(fileId) && typeof fileId !== "string") {
+            throw new functions.https.HttpsError("failed-precondition", "Invalid file 2.0");
+        } else if (isNullish(status) || typeof status !== "number" || status < 0 || status > 3) {
+            throw new functions.https.HttpsError("failed-precondition", `Invalid file 2.1: ${status}`);
+        } else if (
+            isNullish(assignee) ||
+            typeof assignee !== "string" ||
+            isNullish(parentProjectId) ||
+            typeof parentProjectId !== "string" ||
+            (isNotNullish(difficulty) && (typeof difficulty !== "number" || difficulty < 0 || difficulty > 2)) ||
+            (isNotNullish(importance) && (typeof importance !== "number" || importance < 0 || importance > 4))
+        ) {
+            throw new functions.https.HttpsError("failed-precondition", "Invalid file 2.2");
+        }
+        const docs: FirebaseFirestore.DocumentReference[] = [];
+        docs.push(filesCollection.doc(parentProjectId));
+        docs.push(usersCollection.doc(assignee));
+        if (isNotNullish(fileId)) {
+            docs.push(filesCollection.doc(fileId));
+        } else {
+            docs.push(filesCollection.doc());
+        }
+        return admin.firestore().runTransaction(transaction => {
+            return transaction.getAll(...docs).then(resolvedDocs => {
+                const parentProjectDoc = resolvedDocs[0];
+                const assigneeDoc = resolvedDocs[1];
+                const actualFileDoc = resolvedDocs[2];
+                const parentProjectData = parentProjectDoc.data();
+                const assigneeData = assigneeDoc.data();
+                const actualFileData = actualFileDoc.data();
+                if (
+                    !parentProjectDoc.exists ||
+                    isNullish(parentProjectData) ||
+                    parentProjectData.type !== "project" ||
+                    !isEqualMembers(parentProjectData.members, members) ||
+                    !assigneeDoc.exists ||
+                    isNullish(assigneeData) ||
+                    (isNotNullish(fileId) && (!actualFileDoc.exists || isNullish(actualFileData)))
+                ) {
+                    throw new functions.https.HttpsError("failed-precondition", "Invalid file 3");
+                }
+                if (isNotNullish(fileId) && isNotNullish(actualFileData)) {
+                    const { members: oldMembers, parentProjectId: oldParentProjectId, type: oldType } = actualFileData;
+                    if (
+                        !(
+                            type === oldType &&
+                            oldParentProjectId === parentProjectId &&
+                            isEqualMembers(oldMembers, members)
+                        )
+                    ) {
+                        throw new functions.https.HttpsError("failed-precondition", "Invalid file 4");
+                    }
+                }
+                transaction.set(docs[2], { ...file, modifiedAt: admin.firestore.Timestamp.fromDate(new Date()) });
+                return docs[2].id;
+            });
+        });
+    } else {
+        const { parentProjectId } = file;
+        if (
+            (isNotNullish(fileId) && typeof fileId !== "string") ||
+            (isNotNullish(parentProjectId) && typeof parentProjectId !== "string")
+        ) {
+            throw new functions.https.HttpsError("failed-precondition", "Invalid file 5");
+        }
+        const docs: FirebaseFirestore.DocumentReference[] = [];
+        if (isNotNullish(parentProjectId)) {
+            docs.push(filesCollection.doc(parentProjectId));
+        } else {
+            docs.push(filesCollection.doc());
+        }
+        if (isNotNullish(fileId)) {
+            docs.push(filesCollection.doc(fileId));
+        } else {
+            docs.push(filesCollection.doc());
+        }
+        return admin.firestore().runTransaction(transaction => {
+            return transaction.getAll(...docs).then(resolvedDocs => {
+                const parentProjectDoc = resolvedDocs[0];
+                const actualFileDoc = resolvedDocs[1];
+                const parentProjectData = parentProjectDoc.data();
+                const actualFileData = actualFileDoc.data();
+                if (
+                    (isNotNullish(parentProjectId) &&
+                        (!parentProjectDoc.exists ||
+                            isNullish(parentProjectData) ||
+                            parentProjectData.type !== "project" ||
+                            !isEqualMembers(parentProjectData.members, members))) ||
+                    (isNotNullish(fileId) && (!actualFileDoc.exists || isNullish(actualFileData)))
+                ) {
+                    throw new functions.https.HttpsError("failed-precondition", "Invalid file 6");
+                }
+                if (isNotNullish(fileId) && isNotNullish(actualFileData)) {
+                    const { members: oldMembers, parentProjectId: oldParentProjectId, type: oldType } = actualFileData;
+                    if (
+                        !(
+                            type === oldType &&
+                            oldParentProjectId === parentProjectId &&
+                            isEqualMembers(oldMembers, members)
+                        )
+                    ) {
+                        throw new functions.https.HttpsError("failed-precondition", "Invalid file 7");
+                    }
+                }
+                transaction.set(docs[1], { ...file, modifiedAt: admin.firestore.Timestamp.fromDate(new Date()) });
+                return docs[1].id;
+            });
+        });
+    }
+});
+
 function createUserProject(snapshot: FirebaseFirestore.DocumentSnapshot) {
     if (snapshot.exists) {
         const record = snapshot.data();
@@ -302,12 +445,23 @@ function deleteUserProfilePicture(snapshot: FirebaseFirestore.DocumentSnapshot) 
     if (snapshot.exists) {
         return admin
             .storage()
-            .bucket()
-            .file(`images/thumb_${snapshot.id}`)
+            .bucket(`images/${snapshot.id}`)
             .delete();
     }
     return Promise.reject();
 }
+
+// function sendNotification(snapshot: FirebaseFirestore.DocumentSnapshot) {
+//     if (snapshot.exists) {
+//         const record = snapshot.data();
+//         if (isNotNullish(record)) {
+//             admin.messaging().sendToTopic(snapshot.id, );
+//             record.objectID = snapshot.id;
+//             return userIndex.saveObject(record);
+//         }
+//     }
+//     return Promise.reject();
+// }
 
 function saveDocumentInAlgolia(snapshot: FirebaseFirestore.DocumentSnapshot) {
     if (snapshot.exists) {
@@ -339,4 +493,16 @@ function deleteDocumentFromAlgolia(snapshot: FirebaseFirestore.DocumentSnapshot)
 
 function isNotNullish<T>(value: T | null | undefined): value is T {
     return value !== null && value !== undefined;
+}
+
+function isNullish<T>(value: T | null | undefined): value is null | undefined {
+    return value === null || value === undefined;
+}
+
+function isEqualMembers(oldMembers: string[], members: string[]) {
+    if (members.length !== oldMembers.length) {
+        return false;
+    }
+    const memberSet: Set<string> = new Set(members);
+    return oldMembers.reduce((acc, member) => acc && memberSet.has(member), true);
 }

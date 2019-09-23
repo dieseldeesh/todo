@@ -77,7 +77,6 @@ export class UserService {
         const loadingUsersMap = Map(userIds.map(userId => [userId, AsyncLoadedValue.asyncLoading()]));
         this.store.dispatch(AddFetchedUsers.create(loadingUsersMap));
         return this.searchService.getUsers(userIds).then(users => {
-            this.store.dispatch(AddFetchedUsers.create(this.createLoadedUsersMap(users)));
             Promise.all(
                 users.map(user =>
                     user.photoURL == null

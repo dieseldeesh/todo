@@ -14,7 +14,7 @@ import { Reducer } from "redux";
 import { Map } from "immutable";
 import { EntityWithId } from "../common/firebase";
 import { ITask, ISearchedUser, IProject } from "../api";
-import { AddFetchedUsers, SetProjects, AddFetchedTasks, SetCurrentUserPhotoUrl } from "./actions";
+import { AddFetchedUsers, SetProjects, AddFetchedTasks, SetCurrentUserPhotoUrl, SetTaskProject } from "./actions";
 
 const tasksWithIdReducer = TypedAsyncLoadedReducer.builder<Array<EntityWithId<ITask>>, string>()
     .withAsyncLoadHandler(SetTasks, tasks => tasks, error => error)
@@ -36,6 +36,10 @@ const currentProjectReducer = TypedAsyncLoadedReducer.builder<EntityWithId<IProj
     .withAsyncLoadHandler(SetCurrentProject, project => project, error => error)
     .build();
 
+const taskProjectReducer = TypedAsyncLoadedReducer.builder<EntityWithId<IProject>, string>()
+    .withAsyncLoadHandler(SetTaskProject, project => project, error => error)
+    .build();
+
 const fetchedProjectsReducer = TypedReducer.builder<Map<string, IAsyncLoaded<EntityWithId<IProject>, string>>>()
     .withHandler(AddFetchedProjects.TYPE, (state, projects) => state.merge(projects))
     .build();
@@ -50,6 +54,7 @@ const taskStateReducer = combineReducers<IFileState>({
     showIncompletedTasks: showIncompletedTasksReducer,
     currentTask: currentTaskReducer,
     currentProject: currentProjectReducer,
+    taskProject: taskProjectReducer,
     fetchedProjects: fetchedProjectsReducer,
     fetchedTasks: fetchedTasksReducer,
 });

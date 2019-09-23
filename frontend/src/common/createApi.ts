@@ -9,12 +9,12 @@ import {
     IPhotoService,
     PhotoService,
 } from "../api";
-import { firebaseConfig } from "./firebaseConfig";
+import { FIREBASE_CONFIG } from "./firebaseConfig";
 
 export function createApi(): IApplicationApi {
-    const fileService: IFileService = new FileService(firebaseConfig);
-    const userService: IUserService = new UserService(firebaseConfig);
-    const searchService: ISearchService = new SearchService(firebaseConfig);
-    const photoService: IPhotoService = new PhotoService(firebaseConfig);
+    const fileService: IFileService = new FileService(FIREBASE_CONFIG);
+    const userService: IUserService = new UserService(FIREBASE_CONFIG);
+    const searchService: ISearchService = new SearchService(FIREBASE_CONFIG);
+    const photoService: IPhotoService = new PhotoService(FIREBASE_CONFIG);
     return { fileService, userService, searchService, photoService };
 }

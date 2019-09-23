@@ -12,6 +12,7 @@ export const createInitialState = (): IApplicationState => ({
         showIncompletedTasks: true,
         currentTask: AsyncLoadedValue.asyncNotStartedLoading(),
         currentProject: AsyncLoadedValue.asyncNotStartedLoading(),
+        taskProject: AsyncLoadedValue.asyncNotStartedLoading(),
         fetchedProjects: Map<string, IAsyncLoaded<EntityWithId<IProject>, string>>(),
         fetchedTasks: Map<string, IAsyncLoaded<EntityWithId<ITask>, string>>(),
     },

@@ -27,6 +27,18 @@ const api = createApi();
 const stateService = new StateService(store.dispatch);
 const fileService = new FileService(store, api.fileService, api.photoService);
 const userService = new UserService(store, api.userService, api.searchService, api.photoService);
+
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+        .register("../public/firebase-messaging-sw.js")
+        .then(function(registration) {
+            console.log("Registration successful, scope is:", registration.scope);
+        })
+        .catch(function(err) {
+            console.log("Service worker registration failed, error:", err);
+        });
+}
+
 ReactDOM.render(
     <Provider store={store}>
         <ContextProvider stateService={stateService} userService={userService} fileService={fileService}>

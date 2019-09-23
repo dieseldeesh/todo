@@ -2,5 +2,14 @@
   "projects": {
     "default": "adhishr-test",
     "staging": "adhishr-test"
+  },
+  "targets": {
+    "adhishr-test": {
+      "hosting": {
+        "site": [
+          "gottodo"
+        ]
+      }
+    }
   }
 }

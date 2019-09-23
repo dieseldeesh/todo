@@ -3,7 +3,7 @@ import "firebase/auth";
 import "firebase/firestore";
 import "firebase/functions";
 import { TaskStatus, TaskDifficulty, TaskImportance } from "../state";
-import { sortBy } from "lodash-es";
+import { sortBy, noop } from "lodash-es";
 import { NullableValue } from "../common/nullableValue";
 import { IFirebaseConfig, initializeFirebase, EntityWithId, Callback, Cancelable } from "../common/firebase";
 import moment from "moment";
@@ -64,8 +64,14 @@ export interface IFileService {
     getTask(taskId: string, callback: Callback<NullableValue<EntityWithId<ITask>>>): Cancelable;
     listIncompleteTasksForCurrentUser(callback: Callback<Array<EntityWithId<ITask>>>): Promise<Cancelable>;
     listCompletedTasksForCurrentUser(callback: Callback<Array<EntityWithId<ITask>>>): Promise<Cancelable>;
-    listIncompleteTasksForProject(projectId: string, callback: Callback<Array<EntityWithId<ITask>>>): Cancelable;
-    listCompletedTasksForProject(projectId: string, callback: Callback<Array<EntityWithId<ITask>>>): Cancelable;
+    listIncompleteTasksForProject(
+        projectId: string,
+        callback: Callback<Array<EntityWithId<ITask>>>,
+    ): Promise<Cancelable>;
+    listCompletedTasksForProject(
+        projectId: string,
+        callback: Callback<Array<EntityWithId<ITask>>>,
+    ): Promise<Cancelable>;
     createProject(project: IProject): Promise<string>;
     editProject(projectId: string, project: IProject): Promise<void>;
     deleteProject(projectId: string): Promise<void>;
@@ -113,18 +119,20 @@ export class FileService implements IFileService {
     private static FILES_COLLECTION = "files";
 
     private filesCollection: firebase.firestore.CollectionReference;
+    private saveFunction: firebase.functions.HttpsCallable;
 
     public constructor(firebaseConfig: IFirebaseConfig) {
         initializeFirebase(firebaseConfig);
         this.filesCollection = firebase.firestore().collection(FileService.FILES_COLLECTION);
+        this.saveFunction = firebase.functions().httpsCallable("saveFile");
     }
 
     public createTask(task: ITask): Promise<string> {
-        return this.filesCollection.add(this.encodeTask(task)).then(newTask => newTask.id);
+        return this.saveFunction({ fileId: null, file: this.encodeTask(task) }).then(result => result.data);
     }
 
     public editTask(taskId: string, task: ITask): Promise<void> {
-        return this.filesCollection.doc(taskId).set(this.encodeTask(task));
+        return this.saveFunction({ fileId: taskId, file: this.encodeTask(task) }).then(noop);
     }
 
     public getTask(taskId: string, callback: Callback<NullableValue<EntityWithId<ITask>>>): Cancelable {
@@ -144,11 +152,9 @@ export class FileService implements IFileService {
     public async listIncompleteTasksForCurrentUser(
         callback: Callback<Array<EntityWithId<ITask>>>,
     ): Promise<Cancelable> {
-        let user: firebase.User | null = null;
-        while (user == null) {
-            user = await this.getCurrentUser();
-        }
+        const user = await this.getValidUser();
         return this.filesCollection
+            .where("members", "array-contains", user.uid)
             .where("status", ">", 0)
             .where("type", "==", FileType.TASK)
             .where("assignee", "==", user.uid)
@@ -158,11 +164,9 @@ export class FileService implements IFileService {
     }
 
     public async listCompletedTasksForCurrentUser(callback: Callback<Array<EntityWithId<ITask>>>): Promise<Cancelable> {
-        let user: firebase.User | null = null;
-        while (user == null) {
-            user = await this.getCurrentUser();
-        }
+        const user = await this.getValidUser();
         return this.filesCollection
+            .where("members", "array-contains", user.uid)
             .where("status", "==", 0)
             .where("type", "==", FileType.TASK)
             .where("assignee", "==", user.uid)
@@ -170,11 +174,13 @@ export class FileService implements IFileService {
             .onSnapshot(snapshot => callback(this.decodeTaskDocuments(snapshot.docs)));
     }
 
-    public listIncompleteTasksForProject(
+    public async listIncompleteTasksForProject(
         projectId: string,
         callback: Callback<Array<EntityWithId<ITask>>>,
-    ): Cancelable {
+    ): Promise<Cancelable> {
+        const user = await this.getValidUser();
         return this.filesCollection
+            .where("members", "array-contains", user.uid)
             .where("status", ">", 0)
             .where("type", "==", FileType.TASK)
             .where("parentProjectId", "==", projectId)
@@ -183,8 +189,13 @@ export class FileService implements IFileService {
             .onSnapshot(snapshot => callback(this.decodeTaskDocuments(snapshot.docs)));
     }
 
-    public listCompletedTasksForProject(projectId: string, callback: Callback<Array<EntityWithId<ITask>>>): Cancelable {
+    public async listCompletedTasksForProject(
+        projectId: string,
+        callback: Callback<Array<EntityWithId<ITask>>>,
+    ): Promise<Cancelable> {
+        const user = await this.getValidUser();
         return this.filesCollection
+            .where("members", "array-contains", user.uid)
             .where("status", "==", 0)
             .where("type", "==", FileType.TASK)
             .where("parentProjectId", "==", projectId)
@@ -193,11 +204,11 @@ export class FileService implements IFileService {
     }
 
     public createProject(project: IProject): Promise<string> {
-        return this.filesCollection.add(this.encodeProject(project)).then(newProject => newProject.id);
+        return this.saveFunction({ fileId: null, file: this.encodeProject(project) }).then(result => result.data);
     }
 
     public editProject(projectId: string, project: IProject): Promise<void> {
-        return this.filesCollection.doc(projectId).set(this.encodeProject(project));
+        return this.saveFunction({ fileId: projectId, file: this.encodeProject(project) }).then(noop);
     }
 
     public deleteProject(projectId: string): Promise<void> {
@@ -218,10 +229,7 @@ export class FileService implements IFileService {
         projectId: string | null,
         callback: Callback<Array<EntityWithId<IProject>>>,
     ): Promise<Cancelable> {
-        let user: firebase.User | null = null;
-        while (user == null) {
-            user = await this.getCurrentUser();
-        }
+        const user = await this.getValidUser();
         return this.filesCollection
             .where("members", "array-contains", user.uid)
             .where("type", "==", FileType.PROJECT)
@@ -301,6 +309,19 @@ export class FileService implements IFileService {
                 unsubscribe();
                 resolve(user);
             }, reject);
+        });
+    }
+
+    private getValidUser() {
+        return new Promise<firebase.User>(async (resolve, reject) => {
+            let user: firebase.User | null = null;
+            while (user == null) {
+                user = await this.getCurrentUser().catch(error => {
+                    reject(error);
+                    return null;
+                });
+            }
+            resolve(user);
         });
     }
 }

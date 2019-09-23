@@ -20,7 +20,7 @@ interface IProps {
 export class Navigation extends React.PureComponent<IProps> {
     public static contextTypes = ContextType;
     private static STRINGS = {
-        TITLE: "Todolooo",
+        TITLE: "Got-to-do",
         CREATE: "Create new task",
         EDIT: "Update task",
         TASKS: "My tasks",

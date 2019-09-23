@@ -125,15 +125,16 @@ class UnconnectedHome extends React.PureComponent<IProps, IState> {
 
     private fetchData() {
         const { fileService } = this.services;
-        const { projectId, showIncompletedTasks, appView } = this.props;
+        const { projectId, showIncompletedTasks, appView, taskId } = this.props;
         if (appView === AppView.PROJECTS) {
-            console.log("PROJECT VIEW");
             fileService.clearTasks();
             if (projectId != null) {
-                console.log("PROJECT ID", showIncompletedTasks);
                 showIncompletedTasks
                     ? fileService.listIncompleteTasksForProject(projectId)
                     : fileService.listCompletedTasksForProject(projectId);
+                if (taskId == null) {
+                    fileService.getTaskProject(projectId);
+                }
             }
             fileService.getProject(NullableValue.of(projectId).getOrNull());
         } else {
@@ -384,10 +385,9 @@ class UnconnectedHome extends React.PureComponent<IProps, IState> {
     };
 
     private onDeleteProject = (projectId: string) => () => {
-        this.services.fileService.deleteProject(projectId).then(() => {
-            this.setState({ hasFormChanged: false, addTask: false, addProject: false, editProject: false }, () => {
-                this.props.history.push(new ProjectPath({}).getLocationDescriptor());
-            });
+        this.setState({ hasFormChanged: false, addTask: false, addProject: false, editProject: false }, () => {
+            this.props.history.push(new ProjectPath({}).getLocationDescriptor());
+            this.services.fileService.deleteProject(projectId);
         });
     };
 
@@ -432,7 +432,9 @@ class UnconnectedHome extends React.PureComponent<IProps, IState> {
     private addProjectClick = () => {
         if (this.state.hasFormChanged) {
         } else {
-            this.setState({ addProject: true, addTask: false, hasFormChanged: false, editProject: false });
+            this.setState({ addProject: true, addTask: false, hasFormChanged: false, editProject: false }, () => {
+                this.props.history.push(this.getPathFormClosePathLink().getLocationDescriptor());
+            });
         }
     };
 

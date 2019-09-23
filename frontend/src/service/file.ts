@@ -7,6 +7,7 @@ import {
     SetCurrentProject,
     AddFetchedProjects,
     SetCurrentUserPhotoUrl,
+    SetTaskProject,
 } from "../state";
 import { ITask, IFileService, IProject, IPhotoService, ICropMetadata } from "../api";
 import { noop } from "lodash-es";
@@ -21,6 +22,7 @@ export class FileService {
     private cancelCurrentTaskSubscription: Cancelable;
     private cancelCurrentProjectSubscription: Cancelable;
     private cancelFetchProjectSubscription: Cancelable;
+    private cancelTaskProjectSubscription: Cancelable;
 
     constructor(
         private store: Store<IApplicationState>,
@@ -32,6 +34,7 @@ export class FileService {
         this.cancelCurrentTaskSubscription = noop;
         this.cancelCurrentProjectSubscription = noop;
         this.cancelFetchProjectSubscription = noop;
+        this.cancelTaskProjectSubscription = noop;
     }
 
     public deleteTask(taskId: string) {
@@ -83,19 +86,25 @@ export class FileService {
     public listCompletedTasksForProject(projectId: string) {
         this.cancelTaskSubscription();
         this.store.dispatch(SetTasks.InProgress.create(undefined));
-        this.cancelTaskSubscription = this.fileService.listCompletedTasksForProject(projectId, tasks => {
-            this.store.dispatch(SetTasks.Success.create(tasks));
-        });
+        this.fileService
+            .listCompletedTasksForProject(projectId, tasks => {
+                this.store.dispatch(SetTasks.Success.create(tasks));
+            })
+            .then(cancelTaskSubscription => {
+                this.cancelTaskSubscription = cancelTaskSubscription;
+            });
     }
 
     public listIncompleteTasksForProject(projectId: string) {
-        console.log("listIncompleteTasksForProject", projectId);
         this.cancelTaskSubscription();
         this.store.dispatch(SetTasks.InProgress.create(undefined));
-        this.cancelTaskSubscription = this.fileService.listIncompleteTasksForProject(projectId, tasks => {
-            console.log("swag", projectId, tasks);
-            this.store.dispatch(SetTasks.Success.create(tasks));
-        });
+        this.fileService
+            .listIncompleteTasksForProject(projectId, tasks => {
+                this.store.dispatch(SetTasks.Success.create(tasks));
+            })
+            .then(cancelTaskSubscription => {
+                this.cancelTaskSubscription = cancelTaskSubscription;
+            });
     }
 
     public saveProject(project: IProject, projectId?: string): Promise<string> {
@@ -132,6 +141,26 @@ export class FileService {
             .then(cancellable => {
                 this.cancelProjectSubscription = cancellable;
             });
+    }
+
+    public getTaskProject(projectId: string | undefined) {
+        this.cancelTaskProjectSubscription();
+        if (projectId != null) {
+            this.store.dispatch(SetTaskProject.InProgress.create(undefined));
+            this.cancelTaskProjectSubscription = this.fileService.getProject(projectId, nullableProject => {
+                const project = nullableProject.getOrUndefined();
+                if (project != null) {
+                    this.store.dispatch(SetTaskProject.Success.create(project));
+                } else {
+                    this.store.dispatch(SetTaskProject.Failure.create("Could not find project"));
+                }
+            });
+        }
+    }
+
+    public cancelTaskProject() {
+        this.cancelTaskProjectSubscription();
+        this.store.dispatch(SetTaskProject.Clear.create(undefined));
     }
 
     public deleteProject(projectId: string): Promise<void> {

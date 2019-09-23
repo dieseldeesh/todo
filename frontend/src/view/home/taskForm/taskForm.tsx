@@ -137,13 +137,23 @@ class UnconnectedTaskForm extends React.PureComponent<IProps, IState> {
     };
 
     public componentDidMount() {
-        this.assignPropsToStateAndFetchProject(this.props.task);
+        const { task, projectId } = this.props;
+        this.services.fileService.getTaskProject(projectId);
+        this.assignPropsToStateAndFetchProject(task);
     }
 
     public componentDidUpdate(prevProps: IProps) {
-        if (!isEqual(prevProps.task, this.props.task)) {
-            this.assignPropsToStateAndFetchProject(this.props.task);
+        const { task, projectId } = this.props;
+        if (prevProps.projectId !== projectId) {
+            this.services.fileService.getTaskProject(projectId);
         }
+        if (!isEqual(prevProps.task, task)) {
+            this.assignPropsToStateAndFetchProject(task);
+        }
+    }
+
+    public componentWillUnmount() {
+        this.services.fileService.cancelTaskProject();
     }
 
     private assignPropsToStateAndFetchProject(task?: EntityWithId<ITask>) {
@@ -553,11 +563,20 @@ class UnconnectedTaskForm extends React.PureComponent<IProps, IState> {
 
     private saveTask = () => {
         const { title, assignee, dueDate, description, status, difficulty, importance } = this.state;
-        const { projectId, task, currentUser } = this.props;
+        const { projectId, task, currentUser, taskProject } = this.props;
         const taskId = NullableValue.of(task)
             .map(task => task.id)
             .getOrUndefined();
         const taskProjectId = NullableValue.of(projectId).getOrDefault(currentUser.uid);
+        const defaultMembers = [currentUser.uid];
+        const members = NullableValue.of(projectId)
+            .map(() => {
+                if (!AsyncLoadedValue.isLoadingSucceeded(taskProject)) {
+                    return defaultMembers;
+                }
+                return taskProject.value.members;
+            })
+            .getOrDefault(defaultMembers);
         if (!isEmpty(title) && !isEmpty(assignee)) {
             this.services.fileService
                 .saveTask(
@@ -573,7 +592,7 @@ class UnconnectedTaskForm extends React.PureComponent<IProps, IState> {
                         lastModifiedBy: currentUser.uid,
                         parentProjectId: taskProjectId,
                         type: FileType.TASK,
-                        members: [],
+                        members,
                     },
                     taskId,
                 )

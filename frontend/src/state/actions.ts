@@ -18,6 +18,7 @@ export const SetCurrentProject = TypedAsyncAction.define("SET_CURRENT_PROJECT")<
     EntityWithId<IProject>,
     string
 >();
+export const SetTaskProject = TypedAsyncAction.define("SET_TASK_PROJECT")<undefined, EntityWithId<IProject>, string>();
 export const SetShowIncompletedTasks = TypedAction.define("SET_SHOW_INCOMPLETED_TASKS")<boolean>();
 export const SetCurrentUser = TypedAsyncAction.define("SET_CURRENT_USER")<undefined, IUserInfo | null, string>();
 export const SetSearchedUsers = TypedAsyncAction.define("SET_SEARCHED_USERS")<undefined, ISearchedUser[], string>();

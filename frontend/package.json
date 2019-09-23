@@ -36,7 +36,7 @@
         "prepare": "npm run gcp-build",
         "pretest": "npm run gcp-build",
         "start": "react-scripts start",
-        "gcp-build": "react-scripts build",
+        "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
     },

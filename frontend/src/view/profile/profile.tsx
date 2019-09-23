@@ -356,16 +356,26 @@ export class Profile extends React.PureComponent<IProps, IState> {
     };
 
     private onSave = () => {
-        const { userService, stateService, fileService } = this.services;
-        const { displayName, photo, email, crop } = this.state;
-        if (this.haveValuesChanged() && photo != null && crop != null) {
-            fileService.uploadPhoto(photo, crop).then(() => {
-                userService.updateCurrentUser({ displayName, email }).then(() => {
-                    stateService.showSuccessToast("Successfully saved profile");
+        const { fileService } = this.services;
+        const { photo, crop } = this.state;
+        if (this.haveValuesChanged()) {
+            if (photo != null && crop != null) {
+                fileService.uploadPhoto(photo, crop).then(() => {
+                    this.saveUser();
                 });
-            });
+            } else {
+                this.saveUser();
+            }
         }
     };
+
+    private saveUser() {
+        const { userService, stateService } = this.services;
+        const { displayName, email } = this.state;
+        userService.updateCurrentUser({ displayName, email }).then(() => {
+            stateService.showSuccessToast("Successfully saved profile");
+        });
+    }
 
     private onDelete = () => {
         this.setState({ deleteProfile: true });

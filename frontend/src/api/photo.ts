@@ -21,10 +21,14 @@ export interface ICropMetadata {
 
 export class PhotoService implements IPhotoService {
     private storageRef: firebase.storage.Reference;
+    private static CROPS_COLLECTION = "crops";
+    private static IMAGE_CHILD_REF = "images";
+    private cropsCollection: firebase.firestore.CollectionReference;
 
     public constructor(firebaseConfig: IFirebaseConfig) {
         initializeFirebase(firebaseConfig);
         this.storageRef = firebase.storage().ref();
+        this.cropsCollection = firebase.firestore().collection(PhotoService.CROPS_COLLECTION);
     }
 
     public getProfilePicture(imagePath: string): Promise<string> {
@@ -43,14 +47,12 @@ export class PhotoService implements IPhotoService {
             const fileReader = new FileReader();
             fileReader.onload = () => {
                 if (fileReader.result != null && typeof fileReader.result !== "string") {
-                    firebase
-                        .firestore()
-                        .collection("crops")
+                    this.cropsCollection
                         .doc(user.uid)
                         .set(crop)
                         .then(() => {
                             this.storageRef
-                                .child("images")
+                                .child(PhotoService.IMAGE_CHILD_REF)
                                 .child(user.uid)
                                 .child(uuid())
                                 .put(fileReader.result as ArrayBuffer, { contentType: file.type })
